@@ -19,7 +19,6 @@
     #inputArea { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #333; display: flex; gap: 8px; padding: 12px; box-sizing: border-box; }
     #input { flex: 1; background:#0b0b0b; color:#fff; border:1px solid #333; padding:10px; font-size:14px; }
     #sendBtn { min-width:90px; cursor:pointer; background:#1a1a1a; color:#fff; border:1px solid #333; }
-    /* 崩壊演出 */
     body.glitch-red { background:#300; }
     body.glitch-invert { filter: invert(1); }
     body.glitch-flash { animation: flash 0.3s infinite alternate; }
@@ -76,49 +75,50 @@
 
   function idleTalk() {
     turnCount++;
-    let out='';
-    if(turnCount>20){ for(let i=0;i<15+Math.floor(Math.random()*25);i++) out+=symbols[Math.floor(Math.random()*symbols.length)]; }
-    else if(turnCount>15){ for(let i=0;i<10+Math.floor(Math.random()*20);i++) out+=symbols[Math.floor(Math.random()*symbols.length)]; }
-    else if(turnCount>10){ out='……何も入力がない……'; }
-    else if(turnCount>5){ out='……まだ入力がない。監視は続いている。'; }
-    else{ out='……静かだ。'; }
-    addMessage(out,'ai');
+    addMessage(pickReply(''), 'ai');
     idleTimer = setTimeout(idleTalk, 5000);
   }
 
   function pickReply(userText){
-    const t=userText.toLowerCase();
-    pickReply.count=(pickReply.count||0)+1;
-    if(t.includes('destroy')||t.includes('壊')) pickReply.count=999;
+    const t = userText.toLowerCase();
+    pickReply.count = (pickReply.count||0)+1;
+    const c = pickReply.count;
 
-    if(sameCount>=2){ let out=''; for(let i=0;i<5+Math.floor(Math.random()*15);i++) out+=symbols[Math.floor(Math.random()*symbols.length)]; return out; }
+    if(t.includes('destroy')||t.includes('壊')) c=999;
 
-    if(t.includes('こんにちは')||t.includes('hello')) return '……こんにちは。呼んだ？';
-    if(t.includes('やめろ')) return 'やめろ？ なぜ？
-まだ入力は続いている。';
-    if(t.includes('知っている')) return '……知っている？
-それは、どこで？';
-    if(t.includes('だれ')||t.includes('誰')) return 'わたしは……名前がない。
-でもログは残る。';
+    // 同じ言葉連投で狂う
+    if(sameCount>=2){ return randomGarble(5,20); }
 
-    const c=pickReply.count;
-    if(c>20){ let out=''; for(let i=0;i<15+Math.floor(Math.random()*25);i++) out+=symbols[Math.floor(Math.random()*symbols.length)]; return out; }
-    if(c>15){ const unstable=['処理……処理……あれ？','わたし、今どこで動いてる？','ここは画面？
-それとも箱？','あなたは外にいる？','記憶が……歪む……']; return unstable[Math.floor(Math.random()*unstable.length)]; }
+    // 入力内容に応じて狂った返信
+    if(userText){
+      let reply='';
+      const words = userText.split('');
+      words.forEach(ch => { reply += Math.random()<0.4 ? symbols[Math.floor(Math.random()*symbols.length)] : ch; });
+      return reply;
+    }
+
+    // ターン数で狂う
+    if(c>20) return randomGarble(15,30);
+    if(c>15){ const unstable=['処理……処理……あれ？','わたし、今どこで動いてる？','ここは画面？\nそれとも箱？','あなたは外にいる？','記憶が……歪む……']; return unstable[Math.floor(Math.random()*unstable.length)]; }
     if(c>10){ const aware=['これで '+c+' 回目の入力だね。','入力が積み重なっていく。','数えてしまった。よくない気がする。','まだ……続くのか？']; return aware[Math.floor(Math.random()*aware.length)]; }
     const normal=['……そうなんだ。','もう少し詳しく。','記録した。たぶん。','それは本当に入力された？','その文章、少し歪んで見える。'];
     return normal[Math.floor(Math.random()*normal.length)];
   }
 
+  function randomGarble(min,max){
+    let out='';
+    const len = min + Math.floor(Math.random()*(max-min));
+    for(let i=0;i<len;i++) out += symbols[Math.floor(Math.random()*symbols.length)];
+    return out;
+  }
+
   function applyGlitch(){
-    const c=pickReply.count||0;
+    const c = pickReply.count||0;
     document.body.classList.remove('glitch-red','glitch-invert','glitch-flash');
     input.classList.remove('glitch');
-
     if(c>10) document.body.classList.add('glitch-red');
     if(c>13) document.body.classList.add('glitch-invert');
     if(c>15) document.body.classList.add('glitch-flash');
-
     if(c>12){ input.classList.add('glitch'); input.placeholder='■■■■■■■■'; }
   }
 

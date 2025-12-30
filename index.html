@@ -34,6 +34,7 @@
   <button id="sendBtn">送信</button>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', () => {
   const chat = document.getElementById('chat');
   const input = document.getElementById('input');
   const sendBtn = document.getElementById('sendBtn');
@@ -70,9 +71,6 @@
     setTimeout(() => { addMessage(pickReply(text), 'ai'); applyGlitch(); }, 300);
   }
 
-  sendBtn.addEventListener('click', send);
-  input.addEventListener('keydown', e => { if(e.key==='Enter') send(); });
-
   function idleTalk() {
     turnCount++;
     addMessage(pickReply(''), 'ai');
@@ -84,12 +82,10 @@
     pickReply.count = (pickReply.count||0)+1;
     const c = pickReply.count;
 
-    if(t.includes('destroy')||t.includes('壊')) c=999;
+    if(t.includes('destroy')||t.includes('壊')) pickReply.count = 999;
 
-    // 同じ言葉連投で狂う
     if(sameCount>=2){ return randomGarble(5,20); }
 
-    // 入力内容に応じて狂った返信
     if(userText){
       let reply='';
       const words = userText.split('');
@@ -97,7 +93,6 @@
       return reply;
     }
 
-    // ターン数で狂う
     if(c>20) return randomGarble(15,30);
     if(c>15){ const unstable=['処理……処理……あれ？','わたし、今どこで動いてる？','ここは画面？\nそれとも箱？','あなたは外にいる？','記憶が……歪む……']; return unstable[Math.floor(Math.random()*unstable.length)]; }
     if(c>10){ const aware=['これで '+c+' 回目の入力だね。','入力が積み重なっていく。','数えてしまった。よくない気がする。','まだ……続くのか？']; return aware[Math.floor(Math.random()*aware.length)]; }
@@ -122,7 +117,10 @@
     if(c>12){ input.classList.add('glitch'); input.placeholder='■■■■■■■■'; }
   }
 
-  idleTimer=setTimeout(idleTalk,5000);
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', e => { if(e.key==='Enter') send(); });
+  idleTimer = setTimeout(idleTalk, 5000);
+});
 </script>
 </body>
 </html>

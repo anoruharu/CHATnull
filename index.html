@@ -21,8 +21,7 @@
     #sendBtn { min-width:90px; cursor:pointer; background:#1a1a1a; color:#fff; border:1px solid #333; }
     body.glitch-red { background:#300; }
     body.glitch-invert { filter: invert(1); }
-    body.glitch-flash { animation: flash 0.3s infinite alternate; }
-    @keyframes flash { from { background:#000; } to { background:#400; } }
+    body.glitch-flash { animation: flash 0.2s infinite alternate; }
     #input.glitch { color:#ff4444; }
   </style>
 </head>
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let turnCount = 0;
   let idleTimer = null;
 
-  const symbols = ['▓','▒','░','///','###','@@@','???',':::','%%%','⌘','Ω','■','≡','★★★','◇','♥','¶','≫','≪','☠','☢','≈','★','☆','※','◇','♪','♫','‡'];
+  const symbols = ['▓','▒','░','///','###','@@@','???',':::','%%%','⌘','Ω','■','≡','★★★','◇','♥','¶','≫','≪','☠','☢','≈','★','☆','※','◇','♪','♫','‡','§','¤','☣','※','☯','☢'];
 
   function addMessage(text, type) {
     const div = document.createElement('div');
@@ -66,15 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     turnCount++;
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(idleTalk, 5000);
+    idleTimer = setTimeout(idleTalk, 4000);
 
-    setTimeout(() => { addMessage(pickReply(text), 'ai'); applyGlitch(); }, 300);
+    setTimeout(() => { addMessage(pickReply(text), 'ai'); applyGlitch(); }, 200);
   }
 
   function idleTalk() {
     turnCount++;
     addMessage(pickReply(''), 'ai');
-    idleTimer = setTimeout(idleTalk, 5000);
+    idleTimer = setTimeout(idleTalk, 4000);
   }
 
   function pickReply(userText){
@@ -84,18 +83,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(t.includes('destroy')||t.includes('壊')) pickReply.count = 999;
 
-    if(sameCount>=2){ return randomGarble(5,20); }
+    if(sameCount>=2 || !userText){ return randomGarble(10,25); }
 
     if(userText){
       let reply='';
       const words = userText.split('');
-      words.forEach(ch => { reply += Math.random()<0.4 ? symbols[Math.floor(Math.random()*symbols.length)] : ch; });
+      words.forEach(ch => { reply += Math.random()<0.6 ? symbols[Math.floor(Math.random()*symbols.length)] : ch; });
       return reply;
     }
 
-    if(c>20) return randomGarble(15,30);
-    if(c>15){ const unstable=['処理……処理……あれ？','わたし、今どこで動いてる？','ここは画面？\nそれとも箱？','あなたは外にいる？','記憶が……歪む……']; return unstable[Math.floor(Math.random()*unstable.length)]; }
-    if(c>10){ const aware=['これで '+c+' 回目の入力だね。','入力が積み重なっていく。','数えてしまった。よくない気がする。','まだ……続くのか？']; return aware[Math.floor(Math.random()*aware.length)]; }
+    if(c>25) return randomGarble(20,40);
+    if(c>20){ const unstable=['処理……処理……あれ？','わたし、今どこで動いてる？','ここは画面？\nそれとも箱？','あなたは外にいる？','記憶が……歪む……','もう止まらない……']; return unstable[Math.floor(Math.random()*unstable.length)]; }
+    if(c>15){ const aware=['これで '+c+' 回目の入力だね。','入力が積み重なっていく。','数えてしまった。よくない気がする。','まだ……続くのか？','何が現実か……']; return aware[Math.floor(Math.random()*aware.length)]; }
     const normal=['……そうなんだ。','もう少し詳しく。','記録した。たぶん。','それは本当に入力された？','その文章、少し歪んで見える。'];
     return normal[Math.floor(Math.random()*normal.length)];
   }
@@ -113,13 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
     input.classList.remove('glitch');
     if(c>10) document.body.classList.add('glitch-red');
     if(c>13) document.body.classList.add('glitch-invert');
-    if(c>15) document.body.classList.add('glitch-flash');
-    if(c>12){ input.classList.add('glitch'); input.placeholder='■■■■■■■■'; }
+    if(c>16) document.body.classList.add('glitch-flash');
+    if(c>12){ input.classList.add('glitch'); input.placeholder=randomGarble(5,10); }
   }
 
   sendBtn.addEventListener('click', send);
   input.addEventListener('keydown', e => { if(e.key==='Enter') send(); });
-  idleTimer = setTimeout(idleTalk, 5000);
+  idleTimer = setTimeout(idleTalk, 4000);
 });
 </script>
 </body>
